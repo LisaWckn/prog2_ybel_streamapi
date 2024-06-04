@@ -74,7 +74,17 @@ public class Main {
      */
     private static InputStream getResourceAsStream(String path) {
         // TODO
-        throw new UnsupportedOperationException();
+        try{
+            InputStream ioStream = Main.class
+                .getClassLoader()
+                .getResourceAsStream("streamapi/"+path);
+            return ioStream;
+        }catch(IllegalArgumentException e){
+            throw new IllegalArgumentException(path + " is not found");
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -88,31 +98,22 @@ public class Main {
      * @return String of all matching lines, separated by {@code "\n"}
      */
     public static String resources(String path) {
-        // TODO
-        StringBuilder result = new StringBuilder();
+        String result = new String();
 
         try (InputStream stream = getResourceAsStream(path)) {
             BufferedReader r = new BufferedReader(new InputStreamReader(stream));
 
-            List<String> allLines = new ArrayList<>();
+            List<String> allLines = r.lines().toList();
 
-            String newLine = r.readLine();
-            while (newLine != null) {
-                allLines.add(newLine);
-                newLine = r.readLine();
-            }
-
-            for (int i = 1; i < allLines.size(); i++) {
-                String s = allLines.get(i);
-                if (s.startsWith("a") && !(s.length() < 2)) {
-                    result.append(allLines.get(i) + "\n");
-                }
-            }
+            result = allLines.stream()
+                            .filter(s -> (s.startsWith("a") && !(s.length()<2)))
+                            .reduce("", (partialString, element) -> partialString + element + "\n");
+            
 
         } catch (IOException e) {
             System.err.println("Ouch, that didn't work: \n" + e.getMessage());
         }
 
-        return result.toString();
+        return result;
     }
 }
