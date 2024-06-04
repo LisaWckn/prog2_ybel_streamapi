@@ -3,23 +3,7 @@ package streamapi;
 import java.util.Objects;
 
 /** Represent a student. */
-public final class Student {
-    private final String name;
-    private final int cps;
-    private final Enrollment program;
-
-    /**
-     * Create a new student object.
-     *
-     * @param name Name of the new student
-     * @param cps Amount credit points
-     * @param program Enrolled in the degree programme
-     */
-    public Student(String name, int cps, Enrollment program) {
-        this.name = name;
-        this.cps = cps;
-        this.program = program;
-    }
+public record Student(String name, int cps, Enrollment program) {
 
     /**
      * Retrieve a student's name.
