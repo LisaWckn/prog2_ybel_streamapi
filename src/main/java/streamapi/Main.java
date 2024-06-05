@@ -1,6 +1,9 @@
 package streamapi;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /** Starter for the stream api task. */
@@ -19,7 +22,7 @@ public class Main {
         // Task III: Random
 
         // Task IV+V: Resources
-
+        System.out.println(resources("file.txt"));
     }
 
     /**
@@ -71,7 +74,17 @@ public class Main {
      */
     private static InputStream getResourceAsStream(String path) {
         // TODO
-        throw new UnsupportedOperationException();
+        try{
+            InputStream ioStream = Main.class
+                .getClassLoader()
+                .getResourceAsStream("streamapi/"+path);
+            return ioStream;
+        }catch(IllegalArgumentException e){
+            throw new IllegalArgumentException(path + " is not found");
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -85,7 +98,22 @@ public class Main {
      * @return String of all matching lines, separated by {@code "\n"}
      */
     public static String resources(String path) {
-        // TODO
-        throw new UnsupportedOperationException();
+        String result = new String();
+
+        try (InputStream stream = getResourceAsStream(path)) {
+            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+
+            List<String> allLines = r.lines().toList();
+
+            result = allLines.stream()
+                            .filter(s -> (s.startsWith("a") && !(s.length()<2)))
+                            .reduce("", (partialString, element) -> partialString + element + "\n");
+            
+
+        } catch (IOException e) {
+            System.err.println("Ouch, that didn't work: \n" + e.getMessage());
+        }
+
+        return result;
     }
 }
